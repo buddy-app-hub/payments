@@ -2,6 +2,7 @@ from motor.motor_asyncio import AsyncIOMotorCollection
 from bson import ObjectId
 
 from app.dtos.wallet_dto import WalletDto
+from app.models.payment_model import PaymentModel
 from app.models.price_model import PriceModel
 from app.models.transaction_model import TransactionModel
 from app.models.transaction_status_enum import TransactionStatus
@@ -21,11 +22,8 @@ class WalletService:
         return wallets
 
     async def add_wallet(self, wallet_data: dict) -> WalletModel:
-        print("wallet_data", wallet_data)
         wallet = await self.wallet_collection.insert_one(wallet_data)
-        print("inserted data", wallet)
         new_wallet = await self.wallet_collection.find_one({"_id": wallet.inserted_id})
-        print("new wallet", new_wallet)
         return WalletModel(**new_wallet)
 
     async def retrieve_wallet(self, id: str) -> WalletModel:
@@ -61,6 +59,19 @@ class WalletService:
             if updated_wallet:
                 return await self.retrieve_wallet(id)
         return
+    
+    def get_transaction_from_payment(self, payment : PaymentModel, description: str):
+        return TransactionModel(
+            payment_id=payment.id,
+            type=TransactionType.deposit,
+            status=TransactionStatus.pending,
+            amount=payment.amount * self.get_commision(),
+            currency_id=payment.currency_id,
+            description=description,
+        )
+        
+    def get_commision(self):
+        return 0.9
         
     def get_wallet_dto(self, wallet: WalletModel):
         balance = self.get_balance(wallet)

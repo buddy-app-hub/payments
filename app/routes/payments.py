@@ -1,18 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException
 from typing import List
 
-from app.di.dependencies import get_payment_service
+from app.di.dependencies import get_payment_service, get_wallet_service
 from app.models.payment_model import PaymentModel
 from app.models.payment_notification import PaymentNotification
 from app.services.payment_service import PaymentService
+from app.services.wallet_service import WalletService
 
 
 router = APIRouter()
 
 
 @router.get("/init")
-def init_payment(payment_service : PaymentService = Depends(get_payment_service)):
-    return payment_service.handshake()
+def init_payment(connection_id: str, payment_service : PaymentService = Depends(get_payment_service)):
+    return payment_service.handshake(connection_id)
 
 @router.post("/webhook")
 async def webhook(notification: PaymentNotification,
@@ -28,9 +29,14 @@ async def webhook(notification: PaymentNotification,
 
 @router.post("", response_description="Agregar un nuevo pago", response_model=PaymentModel)
 async def create_payment(payment: PaymentModel,
+                         description: str,
+                         wallet_id: str,
                          payment_service : PaymentService = Depends(get_payment_service),
+                         wallet_service : WalletService = Depends(get_wallet_service),
                          ):
     payment = await payment_service.add_payment(payment.model_dump(by_alias=True, exclude_defaults=True, exclude_none=True))
+    transaction = wallet_service.get_transaction_from_payment(payment, description)
+    await wallet_service.add_transaction_to_wallet(wallet_id, transaction.model_dump(by_alias=True, exclude_defaults=True, exclude_none=True))
     return payment
 
 @router.get("", response_description="Listar todos los pagos", response_model=List[PaymentModel])

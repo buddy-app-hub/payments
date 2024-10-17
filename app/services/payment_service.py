@@ -13,7 +13,8 @@ class PaymentService:
         self.payments_collection = payments_collection
 
     def handshake(
-        self
+        self,
+        connection_id: str,
     ) -> str:
         preference_data = {
             "items": [
@@ -29,9 +30,9 @@ class PaymentService:
                 }
             ],
             "back_urls": {
-                "success": "buddy://buddy.app/payments/success",
-                "pending": "buddy://buddy.app/payments/pending",
-                "failure": "buddy://buddy.app/payments/failure",
+                "success": f"https://backend.buddyapp.link/payments/success?connection_id={connection_id}",
+                "pending": f"https://backend.buddyapp.link/payments/pending?connection_id={connection_id}",
+                "failure": f"https://backend.buddyapp.link/payments/failure?connection_id={connection_id}",
             },
             "notification_url": "http://notificationurl.com",
             "auto_return": "approved",

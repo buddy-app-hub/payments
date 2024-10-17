@@ -1,7 +1,3 @@
-from typing import Optional
-from pydantic import BaseModel, Field
-
-from app.models import PyObjectId
 from app.models.created_at_model import CreatedUpdatedAt
 from app.models.price_model import PriceModel
 from app.models.transaction_status_enum import TransactionStatus

@@ -50,7 +50,6 @@ async def delete_wallet_data(id: str, wallet_service : WalletService = Depends(g
 async def add_transaction_to_wallet(id: str,
                                     transaction: TransactionModel,
                                     wallet_service : WalletService = Depends(get_wallet_service)):
-    print("HOLA")
     wallet = await wallet_service.add_transaction_to_wallet(id, transaction.model_dump(by_alias=True, exclude_defaults=True, exclude_none=True))
     return wallet_service.get_wallet_dto(wallet)
 
