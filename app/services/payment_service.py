@@ -15,6 +15,7 @@ class PaymentService:
     def handshake(
         self,
         connection_id: str,
+        meeting_id: str,
     ) -> str:
         preference_data = {
             "items": [
@@ -30,9 +31,9 @@ class PaymentService:
                 }
             ],
             "back_urls": {
-                "success": f"https://backend.buddyapp.link/payments/success?connection_id={connection_id}",
-                "pending": f"https://backend.buddyapp.link/payments/pending?connection_id={connection_id}",
-                "failure": f"https://backend.buddyapp.link/payments/failure?connection_id={connection_id}",
+                "success": f"https://backend.buddyapp.link/payments/success?connection_id={connection_id}&meeting_id={meeting_id}",
+                "pending": f"https://backend.buddyapp.link/payments/pending?connection_id={connection_id}&meeting_id={meeting_id}",
+                "failure": f"https://backend.buddyapp.link/payments/failure?connection_id={connection_id}&meeting_id={meeting_id}",
             },
             "notification_url": "http://notificationurl.com",
             "auto_return": "approved",

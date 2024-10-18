@@ -12,8 +12,10 @@ router = APIRouter()
 
 
 @router.get("/init")
-def init_payment(connection_id: str, payment_service : PaymentService = Depends(get_payment_service)):
-    return payment_service.handshake(connection_id)
+def init_payment(connection_id: str,
+                 meeting_id: str,
+                 payment_service : PaymentService = Depends(get_payment_service)):
+    return payment_service.handshake(connection_id, meeting_id)
 
 @router.post("/webhook")
 async def webhook(notification: PaymentNotification,
