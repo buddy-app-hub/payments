@@ -4,7 +4,7 @@ from mangum import Mangum
 from app.routes import payments, wallets
 
 
-app = FastAPI()
+app = FastAPI(title="Buddy Payments API")
 
 @app.get("/")
 def read_root():
